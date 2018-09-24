@@ -72,6 +72,7 @@ impl Visitable for BasicSection {
     }
 }
 
+/// Interagibles are objects and people
 // pub trait Interagible {
 //     fn open(&self) { println!("Open!"); }
 //     fn close(&self) { println!("Close!"); }
@@ -84,35 +85,8 @@ impl Visitable for BasicSection {
 //     fn utilize(&self) { println!("Use!"); }
 // }
 
-// pub struct Exits
-// {
-//     pub n : Fn() -> ()
-// }
-
-// /// An Element can be an object or a person
 // pub struct Element {
 //     pub tag : String,
 //     pub name : String,
 //     pub dsc : String,
-// }
-
-// pub struct Section
-// {
-//     pub tag : String,
-//     pub name : String,
-//     pub dsc : String,
-//     pub exits : Exits,
-// }
-
-// impl Section {
-//     pub fn new(section : Section) -> Self {
-//         Section(section)
-//     }
-//     pub fn exit(&self) {
-//         (self.exits.n)();
-//     }
-// }
-
-// pub fn info() -> String {
-//     "This is UnEnd 0.0.1".to_string()
 // }
