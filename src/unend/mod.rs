@@ -31,7 +31,6 @@ pub struct BasicSection {
     exits: Exits,
 }
 
-// TODO: pass HashMap with dir->tag to implement basic exits
 impl BasicSection {
     pub fn new(tag: String, name: String, dsc: String, exits: Exits) -> Self {
         BasicSection {
@@ -41,7 +40,7 @@ impl BasicSection {
 }
 
 impl Visitable for BasicSection {
-    // FIXME: Would it be enough to return a reference instead of cloning?
+    // TODO think: Would it be enough to return a reference instead of cloning?
     fn tag(&self) -> String { self.tag.clone() }
     fn name(&self) -> String { self.name.clone() }
     fn dsc(&self) -> String { self.dsc.clone() }
