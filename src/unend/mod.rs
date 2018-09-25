@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::process;
 use std::io::{self, Write};
 
 /// Exit from each section. Can be the tag of any other `Visitable`, so exotic
@@ -17,10 +18,7 @@ pub trait Visitable {
     fn tag(&self) -> String;
     fn name(&self) -> String;
     fn dsc(&self) -> String;
-    fn n(&self) -> Exit { Exit::None }
-    fn s(&self) -> Exit { Exit::None }
-    fn w(&self) -> Exit { Exit::None }
-    fn e(&self) -> Exit { Exit::None }
+    fn exit(&self, _dir: &str) -> Exit { Exit::None }
 }
 
 /// A basic section (`Visitable`), which can be instantiated by passing all descriptions
@@ -35,7 +33,7 @@ pub struct BasicSection {
 
 pub struct ConsoleGame<T: Visitable> {
     sections: HashMap<String, T>,
-    start_section: String,
+    start_section_tag: String,
 }
 
 impl BasicSection {
@@ -52,26 +50,8 @@ impl Visitable for BasicSection {
     fn name(&self) -> String { self.name.clone() }
     fn dsc(&self) -> String { self.dsc.clone() }
 
-    fn n(&self) -> Exit {
-        match self.exits.get("n") {
-            Some(ex) => ex.clone(),
-            None => Exit::None,
-        }
-    }
-    fn s(&self) -> Exit {
-        match self.exits.get("s") {
-            Some(ex) => ex.clone(),
-            None => Exit::None,
-        }
-    }
-    fn w(&self) -> Exit {
-        match self.exits.get("w") {
-            Some(ex) => ex.clone(),
-            None => Exit::None,
-        }
-    }
-    fn e(&self) -> Exit {
-        match self.exits.get("e") {
+    fn exit(&self, dir: &str) -> Exit {
+        match self.exits.get(dir) {
             Some(ex) => ex.clone(),
             None => Exit::None,
         }
@@ -79,40 +59,59 @@ impl Visitable for BasicSection {
 }
 
 impl<T: Visitable> ConsoleGame<T> {
-    pub fn new(sections: HashMap<String, T>, start_section : &str) -> Self {
+    pub fn new(sections: HashMap<String, T>, start_section_tag : &str) -> Self {
         ConsoleGame {
             sections : sections,
-            start_section : start_section.to_string(),
+            start_section_tag : start_section_tag.to_string(),
         }
     }
 
     pub fn run(&self) {
-        let section = self.sections.get(&self.start_section).unwrap();
-        println!("SECTION: {}", section.tag());
+        let mut current_section_tag = self.start_section_tag.clone();
 
-        let mut command = String::new();
-        print!("> ");
-        io::stdout().flush().unwrap(); // Or it won't print, as stdout is line-buffered
+        loop {
+            let current_section = self.sections.get(&current_section_tag).unwrap();
+            println!("You are in the {}", current_section.name());
 
-        match io::stdin().read_line(&mut command) {
-            Ok(_)       => (),
-            Err(error)  => panic!("Input error: {}", error),
-        };
+            // TODO: move input to a trait with a default implementation, so that
+            // input can be actually changed.
+            // Same for output!
+            let mut player_input = String::new();
+            print!("> ");
+            io::stdout().flush().unwrap(); // Or it won't print, as stdout is line-buffered
+            match io::stdin().read_line(&mut player_input) {
+                Ok(_)       => (),
+                Err(error)  => panic!("Input error: {}", error),
+            };
+            let command = player_input.to_lowercase().trim_right().to_string();
 
-        let response = match ref command {
-            "n" => section.n(),
-            "s" => section.s(),
-            "w" => section.w(),
-            "e" => section.e(),
-           // _   => "Unknown command!!"
-        };
-
-        println!("{:?}", response);
-        
-        // println!("Going N: {:?}", );
-        // println!("Going S: {:?}", section.s());
-        // println!("Going W: {:?}", section.w());
-        // println!("Going E: {:?}", section.e());
+            match command.as_str() {
+                dir if ( dir == "n" || dir == "s" || dir == "w" || dir == "e") => {
+                    match current_section.exit(dir) {
+                        Exit::Visitable(s) => {
+                            current_section_tag = s;
+                            continue;
+                        },
+                        Exit::Closed(s) => {
+                            println!("{}", s);
+                            continue;
+                        },
+                        Exit::None => {
+                            println!("No exit this way.");
+                            continue;
+                        }
+                    };
+                }
+                "q" => {
+                    println!("See you!");
+                    process::exit(0);
+                }
+                _   => {
+                    println!("Invalid command.");
+                    continue;
+                }
+            };
+        }
     }
 }
 
