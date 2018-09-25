@@ -1,6 +1,7 @@
 use std::collections::HashMap;
+use std::io::{self, Write};
 
-/// Exists from each section. Can be the tag of any other `Visitable`, so exotic
+/// Exit from each section. Can be the tag of any other `Visitable`, so exotic
 /// things such as portals are indeed supported
 #[derive(Debug, Clone)]
 pub enum Exit {
@@ -8,8 +9,6 @@ pub enum Exit {
     Closed(String),
     None
 }
-
-pub type Exits = HashMap<String, Exit>;
 
 /// Anything that is `Visitable` can be a section in the game.
 /// Default implementation (no exit) is provided for all exits, so only existing
@@ -24,15 +23,23 @@ pub trait Visitable {
     fn e(&self) -> Exit { Exit::None }
 }
 
+/// A basic section (`Visitable`), which can be instantiated by passing all descriptions
+/// and exits as parameters. Only allows values for exits, we'll want to
+/// implement a `Visitable` which accepts closures in the future.
 pub struct BasicSection {
     tag: String,
     name: String,
     dsc: String,
-    exits: Exits,
+    exits: HashMap<String, Exit>,
+}
+
+pub struct ConsoleGame<T: Visitable> {
+    sections: HashMap<String, T>,
+    start_section: String,
 }
 
 impl BasicSection {
-    pub fn new(tag: String, name: String, dsc: String, exits: Exits) -> Self {
+    pub fn new(tag: String, name: String, dsc: String, exits: HashMap<String, Exit>) -> Self {
         BasicSection {
             tag: tag, name: name, dsc: dsc, exits: exits
         }
@@ -71,7 +78,45 @@ impl Visitable for BasicSection {
     }
 }
 
-/// Interagibles are objects and people
+impl<T: Visitable> ConsoleGame<T> {
+    pub fn new(sections: HashMap<String, T>, start_section : &str) -> Self {
+        ConsoleGame {
+            sections : sections,
+            start_section : start_section.to_string(),
+        }
+    }
+
+    pub fn run(&self) {
+        let section = self.sections.get(&self.start_section).unwrap();
+        println!("SECTION: {}", section.tag());
+
+        let mut command = String::new();
+        print!("> ");
+        io::stdout().flush().unwrap(); // Or it won't print, as stdout is line-buffered
+
+        match io::stdin().read_line(&mut command) {
+            Ok(_)       => (),
+            Err(error)  => panic!("Input error: {}", error),
+        };
+
+        let response = match ref command {
+            "n" => section.n(),
+            "s" => section.s(),
+            "w" => section.w(),
+            "e" => section.e(),
+           // _   => "Unknown command!!"
+        };
+
+        println!("{:?}", response);
+        
+        // println!("Going N: {:?}", );
+        // println!("Going S: {:?}", section.s());
+        // println!("Going W: {:?}", section.w());
+        // println!("Going E: {:?}", section.e());
+    }
+}
+
+// Interagibles are objects and people
 // pub trait Interagible {
 //     fn open(&self) { println!("Open!"); }
 //     fn close(&self) { println!("Close!"); }

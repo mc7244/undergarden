@@ -1,5 +1,5 @@
 mod unend;
-use unend::Visitable;
+//use unend::Visitable;
 use std::collections::HashMap;
 
 fn main() {
@@ -17,11 +17,10 @@ fn main() {
         // },
     );
 
-    println!("{}", hallway.tag());
+    let mut sections = HashMap::new();
+    sections.insert("hallway".to_string(), hallway);
 
-    println!("Going N: {:?}", hallway.n());
-    println!("Going S: {:?}", hallway.s());
-    println!("Going W: {:?}", hallway.w());
-    println!("Going E: {:?}", hallway.e());
+    let game = unend::ConsoleGame::new(sections, "hallway");
 
+    game.run();
 }
