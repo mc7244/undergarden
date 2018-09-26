@@ -1,6 +1,6 @@
 use std::collections::HashMap;
-use std::process;
 use std::io::{self, Write};
+use std::process;
 
 /// Exit from each section. Can be the tag of any other `Visitable`, so exotic
 /// things such as portals are indeed supported
@@ -8,17 +8,19 @@ use std::io::{self, Write};
 pub enum Exit {
     Visitable(String),
     Closed(String),
-    None
+    None,
 }
 
 /// Anything that is `Visitable` can be a section in the game.
 /// Default implementation (no exit) is provided for all exits, so only existing
 /// ones needs to be explicitly implemented
 pub trait Visitable {
-    fn tag(&self) -> String;
-    fn name(&self) -> String;
-    fn dsc(&self) -> String;
-    fn exit(&self, _dir: &str) -> Exit { Exit::None }
+    fn get_tag(&self) -> String;
+    fn get_name(&self) -> String;
+    fn get_dsc(&self) -> String;
+    fn exit(&self, _dir: &str) -> Exit {
+        Exit::None
+    }
 }
 
 /// A trait which allows the `Game` to peform IO on the console.
@@ -30,8 +32,8 @@ pub trait ConsoleIO {
         print!("> ");
         io::stdout().flush().unwrap(); // Or it won't print, as stdout is line-buffered
         match io::stdin().read_line(&mut player_input) {
-            Ok(_)       => (),
-            Err(error)  => panic!("Input error: {}", error),
+            Ok(_) => (),
+            Err(error) => panic!("Input error: {}", error),
         };
         player_input.to_lowercase().trim().to_string()
     }
@@ -57,18 +59,32 @@ pub struct Game<T: Visitable> {
 }
 
 impl BasicSection {
-    pub fn new(tag: String, name: String, dsc: String, exits: HashMap<String, Exit>) -> Self {
+    pub fn new(
+        i_tag: String,
+        i_name: String,
+        i_dsc: String,
+        i_exits: HashMap<String, Exit>,
+    ) -> Self {
         BasicSection {
-            tag: tag, name: name, dsc: dsc, exits: exits
+            tag: i_tag,
+            name: i_name,
+            dsc: i_dsc,
+            exits: i_exits,
         }
     }
 }
 
 impl Visitable for BasicSection {
     // TODO think: Would it be enough to return a reference instead of cloning?
-    fn tag(&self) -> String { self.tag.clone() }
-    fn name(&self) -> String { self.name.clone() }
-    fn dsc(&self) -> String { self.dsc.clone() }
+    fn get_tag(&self) -> String {
+        self.tag.clone()
+    }
+    fn get_name(&self) -> String {
+        self.name.clone()
+    }
+    fn get_dsc(&self) -> String {
+        self.dsc.clone()
+    }
 
     fn exit(&self, dir: &str) -> Exit {
         match self.exits.get(dir) {
@@ -79,10 +95,10 @@ impl Visitable for BasicSection {
 }
 
 impl<T: Visitable> Game<T> {
-    pub fn new(sections: HashMap<String, T>, start_section_tag : &str) -> Self {
+    pub fn new(i_sections: HashMap<String, T>, start_section_tag: &str) -> Self {
         Game {
-            sections : sections,
-            start_section_tag : start_section_tag.to_string(),
+            sections: i_sections,
+            start_section_tag: start_section_tag.to_string(),
         }
     }
 
@@ -90,22 +106,22 @@ impl<T: Visitable> Game<T> {
         let mut current_section_tag = self.start_section_tag.clone();
 
         loop {
-            let current_section = self.sections.get(&current_section_tag).unwrap();
-            self.write_line(&format!("You are in the {}", current_section.name()));
+            let current_section = &self.sections[&current_section_tag];
+            self.write_line(&format!("You are in the {}", current_section.get_name()));
 
             let command = self.read_command();
 
             match command.as_str() {
-                dir if ( dir == "n" || dir == "s" || dir == "w" || dir == "e") => {
+                dir if (dir == "n" || dir == "s" || dir == "w" || dir == "e") => {
                     match current_section.exit(dir) {
                         Exit::Visitable(s) => {
                             current_section_tag = s;
                             continue;
-                        },
+                        }
                         Exit::Closed(s) => {
                             self.write_line(&s);
                             continue;
-                        },
+                        }
                         Exit::None => {
                             self.write_line("No exit this way.");
                             continue;
@@ -116,7 +132,7 @@ impl<T: Visitable> Game<T> {
                     self.write_line("See you!");
                     process::exit(0);
                 }
-                _   => {
+                _ => {
                     self.write_line("Invalid command.");
                     continue;
                 }
