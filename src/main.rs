@@ -25,7 +25,7 @@ fn create_sections() -> HashMap<String, BasicSection> {
     let hallway = unend::BasicSection::new(
         "hallway".to_string(),
         "Main hallway".to_string(),
-        "You are on the main hallway. You can go north to the kitchen, south to the sitting room, ...".to_string(),
+        "You can go north to the kitchen, south to the sitting room, ...".to_string(),
         hashmap!{
             "n".to_string() => unend::Exit::Visitable("kitchen".to_string()),
             "e".to_string() => unend::Exit::Closed("There's no time for gardening.".to_string()),

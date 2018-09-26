@@ -104,6 +104,7 @@ impl<T: Visitable> Game<T> {
         loop {
             let current_section = &self.sections[&current_section_tag];
             self.write_line(&format!("You are in the {}", current_section.get_name()));
+            self.write_line(&current_section.get_dsc());
 
             let command = self.read_command();
 
@@ -139,15 +140,16 @@ impl<T: Visitable> Game<T> {
 
 // Interagibles are objects and people
 // pub trait Interagible {
-//     fn open(&self) { println!("Open!"); }
-//     fn close(&self) { println!("Close!"); }
-//     fn give(&self) { println!("Give!"); }
-//     fn take(&self) { println!("Take!"); }
-//     fn look(&self) { println!("Look!"); }
-//     fn talk(&self) { println!("Talk!"); }
-//     fn push(&self) { println!("Push!"); }
-//     fn pull(&self) { println!("Pull!"); }
-//     fn utilize(&self) { println!("Use!"); }
+//     fn interact(&self) {}
+    // fn open(&self) { println!("Open!"); }
+    // fn close(&self) { println!("Close!"); }
+    // fn give(&self) { println!("Give!"); }
+    // fn take(&self) { println!("Take!"); }
+    // fn look(&self) { println!("Look!"); }
+    // fn talk(&self) { println!("Talk!"); }
+    // fn push(&self) { println!("Push!"); }
+    // fn pull(&self) { println!("Pull!"); }
+    // fn utilize(&self) { println!("Use!"); }
 // }
 
 // pub struct Element {
