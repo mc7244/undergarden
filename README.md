@@ -14,6 +14,8 @@ The order of this list is relevant, but subject to change.
 * Objects/people the player can interact with (take, examine, ...). Objects and people are technically the same, as there is no reason not to be able to talk to an object; on the other side, people can be examined, pushed, etc
 * Provide a way to win the game
 * Implement state in sections and objects: objects may change (i.e. a book is open or closed), and rooms may change their description and/or exits (i.e. a locked door can be unlocked) if the player does something
+* Provide an alternate IO trait which delays the writing of characters, providing a teletype-like visual effect
+* Use bold, italic, etc to show important things in the console. This would need to be done in a somewhat portable way. Also, the IO trait would need to parse the strings in order to apply the poper escape codes.
 * Compile to a _wasm_ target and have the game run in a web browser
 * Non-obvious (i.e. more than one sentence) talk with people/objects
 * Allow player to save and restore games
