@@ -21,6 +21,22 @@ pub trait Visitable {
     fn exit(&self, _dir: &str) -> Exit { Exit::None }
 }
 
+pub trait ConsoleIO<T: Visitable> {
+    fn read_command(&self) -> String {
+        let mut player_input = String::new();
+        print!("> ");
+        io::stdout().flush().unwrap(); // Or it won't print, as stdout is line-buffered
+        match io::stdin().read_line(&mut player_input) {
+            Ok(_)       => (),
+            Err(error)  => panic!("Input error: {}", error),
+        };
+        player_input.to_lowercase().trim_right().to_string()
+    }
+    // fn write_line(&self, pat: &str, line: &str) {
+    //     println!("{}", line);
+    // }
+}
+
 /// A basic section (`Visitable`), which can be instantiated by passing all descriptions
 /// and exits as parameters. Only allows values for exits, we'll want to
 /// implement a `Visitable` which accepts closures in the future.
@@ -31,7 +47,7 @@ pub struct BasicSection {
     exits: HashMap<String, Exit>,
 }
 
-pub struct ConsoleGame<T: Visitable> {
+pub struct Game<T: Visitable> {
     sections: HashMap<String, T>,
     start_section_tag: String,
 }
@@ -58,9 +74,9 @@ impl Visitable for BasicSection {
     }
 }
 
-impl<T: Visitable> ConsoleGame<T> {
+impl<T: Visitable> Game<T> {
     pub fn new(sections: HashMap<String, T>, start_section_tag : &str) -> Self {
-        ConsoleGame {
+        Game {
             sections : sections,
             start_section_tag : start_section_tag.to_string(),
         }
@@ -76,14 +92,7 @@ impl<T: Visitable> ConsoleGame<T> {
             // TODO: move input to a trait with a default implementation, so that
             // input can be actually changed.
             // Same for output!
-            let mut player_input = String::new();
-            print!("> ");
-            io::stdout().flush().unwrap(); // Or it won't print, as stdout is line-buffered
-            match io::stdin().read_line(&mut player_input) {
-                Ok(_)       => (),
-                Err(error)  => panic!("Input error: {}", error),
-            };
-            let command = player_input.to_lowercase().trim_right().to_string();
+            let command = self.read_command();
 
             match command.as_str() {
                 dir if ( dir == "n" || dir == "s" || dir == "w" || dir == "e") => {

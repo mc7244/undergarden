@@ -1,5 +1,10 @@
 mod unend;
+use unend::ConsoleIO;
 use std::collections::HashMap;
+
+// Our games does I/O from the console, so we implement the relative trait
+// No need to actually implement methods, the default ones will do
+impl<T: unend::Visitable> ConsoleIO<T> for unend::Game<T> {}
 
 fn main() {
     let mut hallway_exits = HashMap::new();
@@ -29,7 +34,7 @@ fn main() {
     sections.insert("hallway".to_string(), hallway);
     sections.insert("kitchen".to_string(), kitchen);
 
-    let game = unend::ConsoleGame::new(sections, "hallway");
+    let game = unend::Game::new(sections, "hallway");
 
     game.run();
 }
