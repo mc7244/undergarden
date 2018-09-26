@@ -21,7 +21,10 @@ pub trait Visitable {
     fn exit(&self, _dir: &str) -> Exit { Exit::None }
 }
 
-pub trait ConsoleIO<T: Visitable> {
+/// A trait which allows the `Game` to peform IO on the console.
+/// Any trait can be provided and implemented, so that IO is possible on browsers, ...
+pub trait ConsoleIO {
+    /// Just read the command and return it (with no trailing newlines or space around)
     fn read_command(&self) -> String {
         let mut player_input = String::new();
         print!("> ");
@@ -30,11 +33,12 @@ pub trait ConsoleIO<T: Visitable> {
             Ok(_)       => (),
             Err(error)  => panic!("Input error: {}", error),
         };
-        player_input.to_lowercase().trim_right().to_string()
+        player_input.to_lowercase().trim().to_string()
     }
-    // fn write_line(&self, pat: &str, line: &str) {
-    //     println!("{}", line);
-    // }
+    /// Write the passed string, adding a _newline_
+    fn write_line(&self, line: &str) {
+        println!("{}", line);
+    }
 }
 
 /// A basic section (`Visitable`), which can be instantiated by passing all descriptions
@@ -87,11 +91,8 @@ impl<T: Visitable> Game<T> {
 
         loop {
             let current_section = self.sections.get(&current_section_tag).unwrap();
-            println!("You are in the {}", current_section.name());
+            self.write_line(&format!("You are in the {}", current_section.name()));
 
-            // TODO: move input to a trait with a default implementation, so that
-            // input can be actually changed.
-            // Same for output!
             let command = self.read_command();
 
             match command.as_str() {
@@ -102,21 +103,21 @@ impl<T: Visitable> Game<T> {
                             continue;
                         },
                         Exit::Closed(s) => {
-                            println!("{}", s);
+                            self.write_line(&s);
                             continue;
                         },
                         Exit::None => {
-                            println!("No exit this way.");
+                            self.write_line("No exit this way.");
                             continue;
                         }
                     };
                 }
                 "q" => {
-                    println!("See you!");
+                    self.write_line("See you!");
                     process::exit(0);
                 }
                 _   => {
-                    println!("Invalid command.");
+                    self.write_line("Invalid command.");
                     continue;
                 }
             };

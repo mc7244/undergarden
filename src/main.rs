@@ -4,7 +4,7 @@ use std::collections::HashMap;
 
 // Our games does I/O from the console, so we implement the relative trait
 // No need to actually implement methods, the default ones will do
-impl<T: unend::Visitable> ConsoleIO<T> for unend::Game<T> {}
+impl<T: unend::Visitable> ConsoleIO for unend::Game<T> {}
 
 fn main() {
     let mut hallway_exits = HashMap::new();
