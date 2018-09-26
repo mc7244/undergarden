@@ -3,7 +3,7 @@ use std::io::{self, Write};
 use std::process;
 
 /// Exit from each section. Can be the tag of any other `Visitable`, so exotic
-/// things such as portals are indeed supported
+/// things such as portals are indeed supported. Or it can `Closed` or not existing.
 #[derive(Debug, Clone)]
 pub enum Exit {
     Visitable(String),
@@ -12,15 +12,11 @@ pub enum Exit {
 }
 
 /// Anything that is `Visitable` can be a section in the game.
-/// Default implementation (no exit) is provided for all exits, so only existing
-/// ones needs to be explicitly implemented
 pub trait Visitable {
     fn get_tag(&self) -> String;
     fn get_name(&self) -> String;
     fn get_dsc(&self) -> String;
-    fn exit(&self, _dir: &str) -> Exit {
-        Exit::None
-    }
+    fn exit(&self, _dir: &str) -> Exit;
 }
 
 /// A trait which allows the `Game` to peform IO on the console.
