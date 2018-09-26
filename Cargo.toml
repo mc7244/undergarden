@@ -2,6 +2,7 @@
 name = "undergarden"
 version = "0.1.0"
 authors = ["Michele Beltrame <mb@italpro.net>"]
+license = "MIT"
 
 [dependencies]
 maplit = "1.0.1"
