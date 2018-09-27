@@ -157,15 +157,15 @@ impl<T: Visitable> Game<T> {
 // Interagibles are objects and people
 // pub trait Interagible {
 //     fn interact(&self) {}
-    // fn open(&self) { println!("Open!"); }
-    // fn close(&self) { println!("Close!"); }
-    // fn give(&self) { println!("Give!"); }
-    // fn take(&self) { println!("Take!"); }
-    // fn look(&self) { println!("Look!"); }
-    // fn talk(&self) { println!("Talk!"); }
-    // fn push(&self) { println!("Push!"); }
-    // fn pull(&self) { println!("Pull!"); }
-    // fn utilize(&self) { println!("Use!"); }
+// fn open(&self) { println!("Open!"); }
+// fn close(&self) { println!("Close!"); }
+// fn give(&self) { println!("Give!"); }
+// fn take(&self) { println!("Take!"); }
+// fn look(&self) { println!("Look!"); }
+// fn talk(&self) { println!("Talk!"); }
+// fn push(&self) { println!("Push!"); }
+// fn pull(&self) { println!("Pull!"); }
+// fn utilize(&self) { println!("Use!"); }
 // }
 
 // pub struct Element {

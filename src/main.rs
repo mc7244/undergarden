@@ -1,6 +1,6 @@
 mod unend;
 use std::collections::HashMap;
-use unend::{BasicSection, ConsoleIO, Visitable, Exit, ExitDir, Game};
+use unend::{BasicSection, ConsoleIO, Exit, ExitDir, Game, Visitable};
 
 #[macro_use]
 extern crate maplit;
@@ -27,7 +27,7 @@ fn create_sections() -> HashMap<String, BasicSection> {
         hashmap!{
             ExitDir::North => Exit::Visitable("kitchen".to_string()),
             ExitDir::East => Exit::Closed("There's no time for gardening.".to_string()),
-        }
+        },
     );
 
     let kitchen = BasicSection::new(
