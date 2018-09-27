@@ -60,6 +60,7 @@ pub struct BasicSection {
 pub struct Game<T: Visitable> {
     sections: HashMap<String, T>,
     start_section_tag: String,
+    current_section_tag : String,
 }
 
 impl BasicSection {
@@ -99,15 +100,17 @@ impl Visitable for BasicSection {
 }
 
 impl<T: Visitable> Game<T> {
-    pub fn new(i_sections: HashMap<String, T>, start_section_tag: &str) -> Self {
+    pub fn new(i_sections: HashMap<String, T>, start_section_tag: String) -> Self {
         Game {
             sections: i_sections,
-            start_section_tag: start_section_tag.to_string(),
+            start_section_tag: start_section_tag,
+            current_section_tag: String::new(),
         }
     }
 
-    pub fn run(&self) {
-        let mut current_section_tag = self.start_section_tag.clone();
+    pub fn run(&mut self) {
+        self.current_section_tag = self.start_section_tag.clone();
+        let mut previter_section_tag = String::new();
 
         // FIXME: maybe move this elsewhere, but I hate to use a lazy_static
         let exitdirs = hashmap!{
@@ -118,9 +121,12 @@ impl<T: Visitable> Game<T> {
         };
 
         loop {
-            let current_section = &self.sections[&current_section_tag];
-            self.write_line(&format!("You are in the {}", current_section.get_name()));
-            self.write_line(&current_section.get_dsc());
+            let current_section = &self.sections[&self.current_section_tag];
+
+            if self.current_section_tag != previter_section_tag {
+                self.write_position();
+            }
+            previter_section_tag = self.current_section_tag.clone();
 
             let command = self.read_command();
 
@@ -128,7 +134,7 @@ impl<T: Visitable> Game<T> {
                 dir if (dir == "n" || dir == "s" || dir == "w" || dir == "e") => {
                     match current_section.exit(&exitdirs[dir]) {
                         Exit::Visitable(s) => {
-                            current_section_tag = s;
+                            self.current_section_tag = s;
                             continue;
                         }
                         Exit::Closed(s) => {
@@ -141,7 +147,10 @@ impl<T: Visitable> Game<T> {
                         }
                     };
                 }
-                "q" => {
+                "pos" => {
+                    self.write_position();
+                }
+                cmd if (cmd == "q" || cmd == "quit") => {
                     self.write_line("See you!");
                     process::exit(0);
                 }
@@ -151,6 +160,12 @@ impl<T: Visitable> Game<T> {
                 }
             };
         }
+    }
+
+    fn write_position(&self) {
+        let current_section = &self.sections[&self.current_section_tag];
+        self.write_line(&format!("You are in the {}", current_section.get_name()));
+        self.write_line(&format!("{}", current_section.get_dsc()));
     }
 }
 

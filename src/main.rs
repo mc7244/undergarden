@@ -12,7 +12,7 @@ impl<T: unend::Visitable> ConsoleIO for unend::Game<T> {}
 fn main() {
     let sections = create_sections();
 
-    let game = Game::new(sections, "hallway");
+    let mut game = Game::new(sections, "hallway".to_string());
 
     game.run();
 }
