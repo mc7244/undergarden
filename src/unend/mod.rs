@@ -11,12 +11,20 @@ pub enum Exit {
     None,
 }
 
+#[derive(Clone, PartialEq, Eq, Hash)]
+pub enum ExitDir {
+    North,
+    South,
+    West,
+    East,
+}
+
 /// Anything that is `Visitable` can be a section in the game.
 pub trait Visitable {
     fn get_tag(&self) -> String;
     fn get_name(&self) -> String;
     fn get_dsc(&self) -> String;
-    fn exit(&self, _dir: &str) -> Exit;
+    fn exit(&self, _dir: &ExitDir) -> Exit;
 }
 
 /// A trait which allows the `Game` to peform IO on the console.
@@ -46,7 +54,7 @@ pub struct BasicSection {
     tag: String,
     name: String,
     dsc: String,
-    exits: HashMap<String, Exit>,
+    exits: HashMap<ExitDir, Exit>,
 }
 
 pub struct Game<T: Visitable> {
@@ -59,7 +67,7 @@ impl BasicSection {
         i_tag: String,
         i_name: String,
         i_dsc: String,
-        i_exits: HashMap<String, Exit>,
+        i_exits: HashMap<ExitDir, Exit>,
     ) -> Self {
         BasicSection {
             tag: i_tag,
@@ -82,7 +90,7 @@ impl Visitable for BasicSection {
         self.dsc.clone()
     }
 
-    fn exit(&self, dir: &str) -> Exit {
+    fn exit(&self, dir: &ExitDir) -> Exit {
         match self.exits.get(dir) {
             Some(ex) => ex.clone(),
             None => Exit::None,
@@ -101,6 +109,14 @@ impl<T: Visitable> Game<T> {
     pub fn run(&self) {
         let mut current_section_tag = self.start_section_tag.clone();
 
+        // FIXME: maybe move this elsewhere, but I hate to use a lazy_static
+        let exitdirs = hashmap!{
+            "n" => ExitDir::North,
+            "s" => ExitDir::South,
+            "w" => ExitDir::West,
+            "e" => ExitDir::East,
+        };
+
         loop {
             let current_section = &self.sections[&current_section_tag];
             self.write_line(&format!("You are in the {}", current_section.get_name()));
@@ -110,7 +126,7 @@ impl<T: Visitable> Game<T> {
 
             match command.as_str() {
                 dir if (dir == "n" || dir == "s" || dir == "w" || dir == "e") => {
-                    match current_section.exit(dir) {
+                    match current_section.exit(&exitdirs[dir]) {
                         Exit::Visitable(s) => {
                             current_section_tag = s;
                             continue;

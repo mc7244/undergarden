@@ -1,8 +1,6 @@
 mod unend;
 use std::collections::HashMap;
-use unend::BasicSection;
-use unend::ConsoleIO;
-use unend::Visitable;
+use unend::{BasicSection, ConsoleIO, Visitable, Exit, ExitDir, Game};
 
 #[macro_use]
 extern crate maplit;
@@ -14,7 +12,7 @@ impl<T: unend::Visitable> ConsoleIO for unend::Game<T> {}
 fn main() {
     let sections = create_sections();
 
-    let game = unend::Game::new(sections, "hallway");
+    let game = Game::new(sections, "hallway");
 
     game.run();
 }
@@ -22,23 +20,23 @@ fn main() {
 /// Create the sections (we use `BasicSection`, which implements `Visitable`)
 /// and return an HashMap containing them
 fn create_sections() -> HashMap<String, BasicSection> {
-    let hallway = unend::BasicSection::new(
+    let hallway = BasicSection::new(
         "hallway".to_string(),
         "Main hallway".to_string(),
         "You can go north to the kitchen, south to the sitting room, ...".to_string(),
         hashmap!{
-            "n".to_string() => unend::Exit::Visitable("kitchen".to_string()),
-            "e".to_string() => unend::Exit::Closed("There's no time for gardening.".to_string()),
+            ExitDir::North => Exit::Visitable("kitchen".to_string()),
+            ExitDir::East => Exit::Closed("There's no time for gardening.".to_string()),
         }
     );
 
-    let kitchen = unend::BasicSection::new(
+    let kitchen = BasicSection::new(
         "kitchen".to_string(),
         "The grand kitchen".to_string(),
         "You are at the center of the kitchen and dining room.".to_string(),
         hashmap!{
-            "s".to_string() => unend::Exit::Visitable("hallway".to_string()),
-            "e".to_string() => unend::Exit::Closed("You can't exit through the window.".to_string()),
+            ExitDir::South => Exit::Visitable("hallway".to_string()),
+            ExitDir::East => Exit::Closed("You can't exit through the window.".to_string()),
         },
     );
 
