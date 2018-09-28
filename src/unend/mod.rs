@@ -46,14 +46,6 @@ impl<T: Visitable> Game<T> {
         self.current_section_tag = self.start_section_tag.clone();
         let mut previter_section_tag = String::new();
 
-        // FIXME: maybe move this elsewhere, but I hate to use a lazy_static
-        let exitdirs = hashmap!{
-            "n" => ExitDir::North,
-            "s" => ExitDir::South,
-            "w" => ExitDir::West,
-            "e" => ExitDir::East,
-        };
-
         loop {
             let current_section = &self.sections[&self.current_section_tag];
 
@@ -66,7 +58,7 @@ impl<T: Visitable> Game<T> {
 
             match command.as_str() {
                 dir if (dir == "n" || dir == "s" || dir == "w" || dir == "e") => {
-                    match current_section.exit(&exitdirs[dir]) {
+                    match current_section.exit(&EXITDIRS[dir]) {
                         Exit::Visitable(s) => {
                             self.current_section_tag = s;
                         }

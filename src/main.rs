@@ -7,6 +7,9 @@ use unend::visitables::{BasicSection, Exit, ExitDir, Visitable};
 #[macro_use]
 extern crate maplit;
 
+#[macro_use]
+extern crate lazy_static;
+
 // Our games does I/O from the console, so we implement the relative trait
 // No need to actually implement methods, the default ones will do
 impl<T: Visitable> ConsoleIO for Game<T> {}

@@ -17,6 +17,15 @@ pub enum ExitDir {
     East,
 }
 
+lazy_static! {
+    pub static ref EXITDIRS: HashMap<&'static str, ExitDir> = hashmap!{
+        "n" => ExitDir::North,
+        "s" => ExitDir::South,
+        "w" => ExitDir::West,
+        "e" => ExitDir::East,
+    };
+}
+
 /// Anything that is `Visitable` can be a section in the game.
 pub trait Visitable {
     fn get_tag(&self) -> String;
