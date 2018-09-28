@@ -1,30 +1,16 @@
+pub mod sections;
+pub mod objects;
+
+use self::sections::*;
+use self::objects::*;
 use std::collections::HashMap;
 use std::io::{self, Write};
 use std::process;
 
-/// Exit from each section. Can be the tag of any other `Visitable`, so exotic
-/// things such as portals are indeed supported. Or it can `Closed` or not existing.
-#[derive(Debug, Clone)]
-pub enum Exit {
-    Visitable(String),
-    Closed(String),
-    None,
-}
-
-#[derive(Clone, PartialEq, Eq, Hash)]
-pub enum ExitDir {
-    North,
-    South,
-    West,
-    East,
-}
-
-/// Anything that is `Visitable` can be a section in the game.
-pub trait Visitable {
-    fn get_tag(&self) -> String;
-    fn get_name(&self) -> String;
-    fn get_dsc(&self) -> String;
-    fn exit(&self, _dir: &ExitDir) -> Exit;
+pub struct Game<T: Visitable> {
+    sections: HashMap<String, T>,
+    start_section_tag: String,
+    current_section_tag : String,
 }
 
 /// A trait which allows the `Game` to peform IO on the console.
@@ -44,58 +30,6 @@ pub trait ConsoleIO {
     /// Write the passed string, adding a _newline_
     fn write_line(&self, line: &str) {
         println!("{}", line);
-    }
-}
-
-/// A basic section (`Visitable`), which can be instantiated by passing all descriptions
-/// and exits as parameters. Only allows values for exits, we'll want to
-/// implement a `Visitable` which accepts closures in the future.
-pub struct BasicSection {
-    tag: String,
-    name: String,
-    dsc: String,
-    exits: HashMap<ExitDir, Exit>,
-}
-
-pub struct Game<T: Visitable> {
-    sections: HashMap<String, T>,
-    start_section_tag: String,
-    current_section_tag : String,
-}
-
-impl BasicSection {
-    pub fn new(
-        i_tag: String,
-        i_name: String,
-        i_dsc: String,
-        i_exits: HashMap<ExitDir, Exit>,
-    ) -> Self {
-        BasicSection {
-            tag: i_tag,
-            name: i_name,
-            dsc: i_dsc,
-            exits: i_exits,
-        }
-    }
-}
-
-impl Visitable for BasicSection {
-    // TODO think: Would it be enough to return a reference instead of cloning?
-    fn get_tag(&self) -> String {
-        self.tag.clone()
-    }
-    fn get_name(&self) -> String {
-        self.name.clone()
-    }
-    fn get_dsc(&self) -> String {
-        self.dsc.clone()
-    }
-
-    fn exit(&self, dir: &ExitDir) -> Exit {
-        match self.exits.get(dir) {
-            Some(ex) => ex.clone(),
-            None => Exit::None,
-        }
     }
 }
 
@@ -135,15 +69,12 @@ impl<T: Visitable> Game<T> {
                     match current_section.exit(&exitdirs[dir]) {
                         Exit::Visitable(s) => {
                             self.current_section_tag = s;
-                            continue;
                         }
                         Exit::Closed(s) => {
                             self.write_line(&s);
-                            continue;
                         }
                         Exit::None => {
                             self.write_line("No exit this way.");
-                            continue;
                         }
                     };
                 }
@@ -156,7 +87,6 @@ impl<T: Visitable> Game<T> {
                 }
                 _ => {
                     self.write_line("Invalid command.");
-                    continue;
                 }
             };
         }
@@ -168,23 +98,3 @@ impl<T: Visitable> Game<T> {
         self.write_line(&format!("{}", current_section.get_dsc()));
     }
 }
-
-// Interagibles are objects and people
-// pub trait Interagible {
-//     fn interact(&self) {}
-// fn open(&self) { println!("Open!"); }
-// fn close(&self) { println!("Close!"); }
-// fn give(&self) { println!("Give!"); }
-// fn take(&self) { println!("Take!"); }
-// fn look(&self) { println!("Look!"); }
-// fn talk(&self) { println!("Talk!"); }
-// fn push(&self) { println!("Push!"); }
-// fn pull(&self) { println!("Pull!"); }
-// fn utilize(&self) { println!("Use!"); }
-// }
-
-// pub struct Element {
-//     pub tag : String,
-//     pub name : String,
-//     pub dsc : String,
-// }
