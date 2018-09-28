@@ -1,8 +1,8 @@
-pub mod sections;
-pub mod objects;
+pub mod interagibles;
+pub mod visitables;
 
-use self::sections::*;
-use self::objects::*;
+use self::visitables::*;
+use self::interagibles::*;
 use std::collections::HashMap;
 use std::io::{self, Write};
 use std::process;

@@ -2,7 +2,7 @@ mod unend;
 
 use std::collections::HashMap;
 use unend::{ConsoleIO, Game};
-use unend::sections::{BasicSection, Exit, ExitDir, Visitable};
+use unend::visitables::{BasicSection, Exit, ExitDir, Visitable};
 
 #[macro_use]
 extern crate maplit;
