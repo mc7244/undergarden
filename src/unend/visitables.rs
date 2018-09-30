@@ -1,3 +1,4 @@
+use unend::interagibles::*;
 use std::collections::HashMap;
 
 /// Exit from each section. Can be the tag of any other `Visitable`, so exotic
@@ -31,6 +32,7 @@ pub trait Visitable {
     fn get_tag(&self) -> String;
     fn get_name(&self) -> String;
     fn get_dsc(&self) -> String;
+    fn get_interagibles(&self) -> &HashMap<String, BasicObject>;
     fn exit(&self, _dir: &ExitDir) -> Exit;
 }
 
@@ -42,6 +44,7 @@ pub struct BasicSection {
     name: String,
     dsc: String,
     exits: HashMap<ExitDir, Exit>,
+    interagibles: HashMap<String, BasicObject>,
 }
 
 impl BasicSection {
@@ -50,18 +53,19 @@ impl BasicSection {
         i_name: String,
         i_dsc: String,
         i_exits: HashMap<ExitDir, Exit>,
+        i_interagibles: HashMap<String, BasicObject>,
     ) -> Self {
         BasicSection {
             tag: i_tag,
             name: i_name,
             dsc: i_dsc,
             exits: i_exits,
+            interagibles: i_interagibles,
         }
     }
 }
 
 impl Visitable for BasicSection {
-    // TODO think: Would it be enough to return a reference instead of cloning?
     fn get_tag(&self) -> String {
         self.tag.clone()
     }
@@ -70,6 +74,9 @@ impl Visitable for BasicSection {
     }
     fn get_dsc(&self) -> String {
         self.dsc.clone()
+    }
+    fn get_interagibles(&self) -> &HashMap<String, BasicObject> {
+        &self.interagibles
     }
 
     fn exit(&self, dir: &ExitDir) -> Exit {

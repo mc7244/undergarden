@@ -3,12 +3,13 @@ mod unend;
 use std::collections::HashMap;
 use unend::{ConsoleIO, Game};
 use unend::visitables::{BasicSection, Exit, ExitDir, Visitable};
+use unend::interagibles::{BasicObject, Interagible};
 
 #[macro_use]
 extern crate maplit;
-
 #[macro_use]
 extern crate lazy_static;
+extern crate regex;
 
 // Our games does I/O from the console, so we implement the relative trait
 // No need to actually implement methods, the default ones will do
@@ -33,6 +34,7 @@ fn create_sections() -> HashMap<String, BasicSection> {
             ExitDir::North => Exit::Visitable("kitchen".to_string()),
             ExitDir::East => Exit::Closed("There's no time for gardening.".to_string()),
         },
+        hashmap!{},
     );
 
     let kitchen = BasicSection::new(
@@ -43,6 +45,11 @@ fn create_sections() -> HashMap<String, BasicSection> {
             ExitDir::South => Exit::Visitable("hallway".to_string()),
             ExitDir::East => Exit::Closed("You can't exit through the window.".to_string()),
         },
+        hashmap!{"pinkbook".to_string() => BasicObject::new(
+           "pinkbook".to_string(),
+           "Pink Book".to_string(),
+           "It is a strange pink book with a black sheep on the cover.".to_string(),
+       )},
     );
 
     hashmap!{
