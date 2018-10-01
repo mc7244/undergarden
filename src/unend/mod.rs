@@ -76,21 +76,23 @@ impl<T: Visitable> Game<T> {
                 irx if interaction_regex.is_match(irx) => {
                     let caps = interaction_regex.captures(irx).unwrap();
                     let interaction = match INTERACTIONS.get(caps.get(1).unwrap().as_str()) {
-                        Some(intn) => intn,
+                        Some(intn) => intn.clone(),
                         None => {
                             self.write_line("Unknown command.");
                             continue;
                         }
                     };
-                    let target = cs_interagibles.get(caps.get(2).unwrap().as_str());
-                    match target {
-                        Some(_) => {},
+                    let target = match cs_interagibles.get(caps.get(2).unwrap().as_str()) {
+                        Some(tgt) =>tgt,
                         None => {
                             self.write_line("Invalid target for action.");
                             continue;
                         }
                     };
-                    self.write_line(&format!("Interacting {:?} - {:?}", interaction, target));
+                    //self.write_line(&format!("Interacting {:?} - {:?}", interaction, target));
+                    match target.interact(interaction) {
+                        InteractionRes::Info(s) => self.write_line(&s)
+                    }
                 }
                 "pos" => {
                     self.write_position();

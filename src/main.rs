@@ -3,7 +3,7 @@ mod unend;
 use std::collections::HashMap;
 use unend::{ConsoleIO, Game};
 use unend::visitables::{BasicSection, Exit, ExitDir, Visitable};
-use unend::interagibles::{BasicObject, Interagible};
+use unend::interagibles::{InfoObject, Interaction};
 
 #[macro_use]
 extern crate maplit;
@@ -45,10 +45,14 @@ fn create_sections() -> HashMap<String, BasicSection> {
             ExitDir::South => Exit::Visitable("hallway".to_string()),
             ExitDir::East => Exit::Closed("You can't exit through the window.".to_string()),
         },
-        hashmap!{"pinkbook".to_string() => BasicObject::new(
+        hashmap!{"pinkbook".to_string() => InfoObject::new(
            "pinkbook".to_string(),
            "Pink Book".to_string(),
-           "It is a strange pink book with a black sheep on the cover.".to_string(),
+           hashmap!{
+               Interaction::Look =>  "It is a strange pink book with a black sheep on the cover.".to_string(),
+               Interaction::Take =>  "I don't need this book.".to_string()
+           }
+          ,
        )},
     );
 

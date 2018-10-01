@@ -8,6 +8,7 @@ pub enum Interaction {
     Give,
     Take,
     Look,
+    Talk,
     Push,
     Pull,
     Use,
@@ -20,6 +21,7 @@ lazy_static! {
         "give" => Interaction::Give,
         "take" => Interaction::Take,
         "look" => Interaction::Look,
+        "talk" => Interaction::Talk,
         "push" => Interaction::Push,
         "pull" => Interaction::Pull,
         "use" => Interaction::Use,
@@ -28,14 +30,7 @@ lazy_static! {
 
 /// Possible results for an interaction
 pub enum InteractionRes {
-    Open,
-    Close,
-    Give,
-    Take,
-    Look(String),
-    Push,
-    Pull,
-    Use,
+    Info(String),
 }
 
 /// Interagibles are objects and people
@@ -45,29 +40,31 @@ pub trait Interagible {
     fn interact(&self, Interaction) -> InteractionRes;
 }
 
+/// An object which can only give information (=return strings) when
+/// interacted with.
 #[derive(Debug, Clone)]
-pub struct BasicObject {
+pub struct InfoObject {
     tag: String,
     name: String,
-    dsc: String,  // We'll be providing this when player "looks" at the object
+    av_interactions: HashMap<Interaction, String>,
 }
 
-impl BasicObject {
+impl InfoObject {
     pub fn new(
         i_tag: String,
         i_name: String,
-        i_dsc: String,
+        i_av_interactions: HashMap<Interaction, String>
         // i_sdsc: String,
     ) -> Self {
-        BasicObject {
+        InfoObject {
             tag: i_tag,
             name: i_name,
-            dsc: i_dsc,
+            av_interactions: i_av_interactions
         }
     }
 }
 
-impl Interagible for BasicObject {
+impl Interagible for InfoObject {
     fn get_tag(&self) -> String {
         self.tag.clone()
     }
@@ -76,7 +73,10 @@ impl Interagible for BasicObject {
     }
 
     fn interact(&self, iact: Interaction) -> InteractionRes {
-        // Assume we can only look (for now :-))
-        InteractionRes::Look(self.dsc.clone())
+        // See if we have a string available for this interaction
+        match self.av_interactions.get(&iact) {
+            Some(s) => InteractionRes::Info(s.to_string()),
+            None => InteractionRes::Info("That won't work".to_string())
+        }
     }
 }

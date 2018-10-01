@@ -32,7 +32,7 @@ pub trait Visitable {
     fn get_tag(&self) -> String;
     fn get_name(&self) -> String;
     fn get_dsc(&self) -> String;
-    fn get_interagibles(&self) -> &HashMap<String, BasicObject>;
+    fn get_interagibles(&self) -> &HashMap<String, InfoObject>;
     fn exit(&self, _dir: &ExitDir) -> Exit;
 }
 
@@ -44,7 +44,7 @@ pub struct BasicSection {
     name: String,
     dsc: String,
     exits: HashMap<ExitDir, Exit>,
-    interagibles: HashMap<String, BasicObject>,
+    interagibles: HashMap<String, InfoObject>,
 }
 
 impl BasicSection {
@@ -53,7 +53,7 @@ impl BasicSection {
         i_name: String,
         i_dsc: String,
         i_exits: HashMap<ExitDir, Exit>,
-        i_interagibles: HashMap<String, BasicObject>,
+        i_interagibles: HashMap<String, InfoObject>,
     ) -> Self {
         BasicSection {
             tag: i_tag,
@@ -75,7 +75,7 @@ impl Visitable for BasicSection {
     fn get_dsc(&self) -> String {
         self.dsc.clone()
     }
-    fn get_interagibles(&self) -> &HashMap<String, BasicObject> {
+    fn get_interagibles(&self) -> &HashMap<String, InfoObject> {
         &self.interagibles
     }
 
