@@ -11,7 +11,7 @@ Basically everything. :-)
 The order of this list is relevant, but subject to change.
 
 * Section navigation: move from room to room freely :white_check_mark:
-* Objects/people the player can interact with (take, examine, ...). Objects and people are technically the same, as there is no reason not to be able to talk to an object; on the other side, people can be examined, pushed, etc :white_check_mark: Begin with very basic interaction (objects only provide an info string for every interaction). :white_check_mark:
+* Objects/people the player can interact with (take, examine, ...). Objects and people are technically the same, as there is no reason not to be able to talk to an object; on the other side, people can be examined, pushed, etc. Begin with very basic interaction (objects only provide an info string for every interaction). :white_check_mark:
 * Implement inventory and _take_ interaction
 * Provide a way to win the game
 * Implement state in sections and objects: objects may change (i.e. a book is open or closed), and rooms may change their description and/or exits (i.e. a locked door can be unlocked) if the player does something
