@@ -9,10 +9,8 @@ use std::process;
 use regex::{Regex};
 
 /// The game: this governs all
-pub struct Game<T>
-    where T: Visitable
-{
-    sections: HashMap<String, T>,
+pub struct Game {
+    sections: HashMap<String, UnendSection>,
     start_section_tag: String,
     current_section_tag : String,
 }
@@ -37,10 +35,8 @@ pub trait ConsoleIO {
     }
 }
 
-impl<T> Game<T>
-    where T: Visitable
-{
-    pub fn new(i_sections: HashMap<String, T>, i_start_section_tag: String) -> Self {
+impl Game {
+    pub fn new(i_sections: HashMap<String, UnendSection>, i_start_section_tag: String) -> Self {
         Game {
             sections: i_sections,
             start_section_tag: i_start_section_tag,
@@ -55,7 +51,9 @@ impl<T> Game<T>
 
         let interaction_regex = Regex::new(r"(\w+)\s+(\w+)").unwrap();
         loop {
-            let current_section = &self.sections[&self.current_section_tag];
+            let current_section = match &self.sections[&self.current_section_tag] {
+                UnendSection::Basic(cs) => cs,
+            };
             let cs_objects : &HashMap<String, UnendObject> = current_section.get_objects();
 
             if self.current_section_tag != previter_section_tag {
@@ -128,7 +126,9 @@ impl<T> Game<T>
     }
 
     fn write_position(&self) {
-        let current_section = &self.sections[&self.current_section_tag];
+        let current_section = match &self.sections[&self.current_section_tag] {
+            UnendSection::Basic(cs) => cs,
+        };
         self.write_line(&format!("You are in the {}", current_section.get_name()));
         self.write_line(&current_section.get_dsc());
     }

@@ -1,6 +1,10 @@
 use unend::interagibles::*;
 use std::collections::HashMap;
 
+pub enum UnendSection {
+    Basic(BasicSection),
+}
+
 /// Exit from each section. Can be the tag of any other `Visitable`, so exotic
 /// things such as portals are indeed supported. Or it can `Closed` or not existing.
 #[derive(Debug, Clone)]

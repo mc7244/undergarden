@@ -2,8 +2,8 @@ mod unend;
 
 use std::collections::HashMap;
 use unend::{ConsoleIO, Game};
-use unend::visitables::{BasicSection, Exit, ExitDir, Visitable};
-use unend::interagibles::{UnendObject, InfoObject, PortalObject, Interaction, Interagible};
+use unend::visitables::{UnendSection, BasicSection, Exit, ExitDir};
+use unend::interagibles::{UnendObject, InfoObject, PortalObject, Interaction};
 
 #[macro_use]
 extern crate maplit;
@@ -13,7 +13,7 @@ extern crate regex;
 
 // Our games does I/O from the console, so we implement the relative trait
 // No need to actually implement methods, the default ones will do
-impl<T: Visitable> ConsoleIO for Game<T> {}
+impl ConsoleIO for Game {}
 
 fn main() {
     let sections = create_sections();
@@ -25,8 +25,8 @@ fn main() {
 
 /// Create the sections (we use `BasicSection`, which implements `Visitable`)
 /// and return an HashMap containing them
-fn create_sections() -> HashMap<String, BasicSection> {
-    let hallway = BasicSection::new(
+fn create_sections() -> HashMap<String, UnendSection> {
+    let hallway = UnendSection::Basic(BasicSection::new(
         "hallway".to_string(),
         "Main hallway".to_string(),
         "You can go north to the kitchen, south to the sitting room, ...".to_string(),
@@ -40,9 +40,9 @@ fn create_sections() -> HashMap<String, BasicSection> {
             "This fireplace glows like it's enchanted.".to_string(),
             "secretroom".to_string(),
         ))},
-    );
+    ));
 
-    let kitchen = BasicSection::new(
+    let kitchen = UnendSection::Basic(BasicSection::new(
         "kitchen".to_string(),
         "The grand kitchen".to_string(),
         "You are at the center of the kitchen and dining room.".to_string(),
@@ -58,9 +58,9 @@ fn create_sections() -> HashMap<String, BasicSection> {
                 Interaction::Take =>  "I don't need this book.".to_string(),
             },
        ))},
-    );
+    ));
 
-    let secretroom = BasicSection::new(
+    let secretroom = UnendSection::Basic(BasicSection::new(
         "secretroom".to_string(),
         "Secret Room".to_string(),
         "A very strange and dark secret room. You see a light east, maybe an exit".to_string(),
@@ -68,11 +68,11 @@ fn create_sections() -> HashMap<String, BasicSection> {
             ExitDir::South => Exit::Visitable("hallway".to_string()),
         },
         hashmap!{},
-    );
+    ));
 
     hashmap!{
-        hallway.get_tag() => hallway,
-        kitchen.get_tag() => kitchen,
-        secretroom.get_tag() => secretroom,
+        "hallway".to_string() => hallway,
+        "kitchen".to_string() => kitchen,
+        "secretroom".to_string() => secretroom,
     }
 }
