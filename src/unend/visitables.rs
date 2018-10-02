@@ -28,32 +28,36 @@ lazy_static! {
 }
 
 /// Anything that is `Visitable` can be a section in the game.
-pub trait Visitable {
+pub trait Visitable<I>
+    where I: Interagible
+{
     fn get_tag(&self) -> String;
     fn get_name(&self) -> String;
     fn get_dsc(&self) -> String;
-    fn get_interagibles(&self) -> &HashMap<String, InfoObject>;
+    fn get_interagibles(&self) -> &HashMap<String, I>;
     fn exit(&self, _dir: &ExitDir) -> Exit;
 }
 
 /// A basic section (`Visitable`), which can be instantiated by passing all descriptions
 /// and exits as parameters. Only allows values for exits, we'll want to
 /// implement a `Visitable` which accepts closures in the future.
-pub struct BasicSection {
+pub struct BasicSection<I>
+    where I: Interagible
+{
     tag: String,
     name: String,
     dsc: String,
     exits: HashMap<ExitDir, Exit>,
-    interagibles: HashMap<String, InfoObject>,
+    interagibles: HashMap<String, I>,
 }
 
-impl BasicSection {
+impl<I: Interagible> BasicSection<I> {
     pub fn new(
         i_tag: String,
         i_name: String,
         i_dsc: String,
         i_exits: HashMap<ExitDir, Exit>,
-        i_interagibles: HashMap<String, InfoObject>,
+        i_interagibles: HashMap<String, I>,
     ) -> Self {
         BasicSection {
             tag: i_tag,
@@ -65,7 +69,9 @@ impl BasicSection {
     }
 }
 
-impl Visitable for BasicSection {
+impl<I> Visitable<I> for BasicSection<I>
+    where I: Interagible
+{
     fn get_tag(&self) -> String {
         self.tag.clone()
     }
@@ -75,7 +81,7 @@ impl Visitable for BasicSection {
     fn get_dsc(&self) -> String {
         self.dsc.clone()
     }
-    fn get_interagibles(&self) -> &HashMap<String, InfoObject> {
+    fn get_interagibles(&self) -> &HashMap<String, I> {
         &self.interagibles
     }
 

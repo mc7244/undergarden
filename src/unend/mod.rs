@@ -7,11 +7,17 @@ use std::collections::HashMap;
 use std::io::{self, Write};
 use std::process;
 use regex::{Regex};
+use std::marker::PhantomData;
 
-pub struct Game<T: Visitable> {
+/// The game: this governs all
+pub struct Game<I, T>
+    where I: Interagible, T: Visitable<I>
+{
     sections: HashMap<String, T>,
     start_section_tag: String,
     current_section_tag : String,
+    // This is only to have rustc compile - or it will file complaining I is unused
+    unused: PhantomData<I>,
 }
 
 /// A trait which allows the `Game` to peform IO on the console.
@@ -34,12 +40,15 @@ pub trait ConsoleIO {
     }
 }
 
-impl<T: Visitable> Game<T> {
+impl<I, T> Game<I, T>
+    where I: Interagible, T: Visitable<I>
+{
     pub fn new(i_sections: HashMap<String, T>, i_start_section_tag: String) -> Self {
         Game {
             sections: i_sections,
             start_section_tag: i_start_section_tag,
             current_section_tag: String::new(),
+            unused: PhantomData,
         }
     }
 
@@ -50,7 +59,7 @@ impl<T: Visitable> Game<T> {
         let interaction_regex = Regex::new(r"(\w+)\s+(\w+)").unwrap();
         loop {
             let current_section = &self.sections[&self.current_section_tag];
-            let cs_interagibles = current_section.get_interagibles();
+            let cs_interagibles : &HashMap<String, I> = current_section.get_interagibles();
 
             if self.current_section_tag != previter_section_tag {
                 self.write_position();
