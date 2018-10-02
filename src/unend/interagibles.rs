@@ -71,12 +71,12 @@ impl InfoObject {
     pub fn new(
         i_tag: String,
         i_name: String,
-        i_av_interactions: HashMap<Interaction, String>
+        i_av_interactions: HashMap<Interaction, String>,
     ) -> Self {
         InfoObject {
             tag: i_tag,
             name: i_name,
-            av_interactions: i_av_interactions
+            av_interactions: i_av_interactions,
         }
     }
 }
@@ -92,23 +92,18 @@ impl Interagible for InfoObject {
         // See if we have a string available for this interaction
         match self.av_interactions.get(&iact) {
             Some(s) => InteractionRes::Info(s.to_string()),
-            None => InteractionRes::Info("That won't work".to_string())
+            None => InteractionRes::Info("That won't work".to_string()),
         }
     }
 }
 
 impl PortalObject {
-    pub fn new(
-        i_tag: String,
-        i_name: String,
-        i_dsc: String,
-        i_destination: String,
-    ) -> Self {
-       PortalObject {
+    pub fn new(i_tag: String, i_name: String, i_dsc: String, i_destination: String) -> Self {
+        PortalObject {
             tag: i_tag,
             name: i_name,
             dsc: i_dsc,
-            destination: i_destination
+            destination: i_destination,
         }
     }
 }

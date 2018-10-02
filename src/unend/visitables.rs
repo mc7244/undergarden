@@ -1,5 +1,5 @@
-use unend::interagibles::*;
 use std::collections::HashMap;
+use unend::interagibles::*;
 
 pub enum UnendSection {
     Basic(BasicSection),

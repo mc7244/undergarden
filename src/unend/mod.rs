@@ -1,18 +1,18 @@
 pub mod interagibles;
 pub mod visitables;
 
-use self::visitables::*;
 use self::interagibles::*;
+use self::visitables::*;
+use regex::Regex;
 use std::collections::HashMap;
 use std::io::{self, Write};
 use std::process;
-use regex::{Regex};
 
 /// The game: this governs all
 pub struct Game {
     sections: HashMap<String, UnendSection>,
     start_section_tag: String,
-    current_section_tag : String,
+    current_section_tag: String,
 }
 
 /// A trait which allows the `Game` to peform IO on the console.
@@ -54,7 +54,7 @@ impl Game {
             let current_section = match &self.sections[&self.current_section_tag] {
                 UnendSection::Basic(cs) => cs,
             };
-            let cs_objects : &HashMap<String, UnendObject> = current_section.get_objects();
+            let cs_objects: &HashMap<String, UnendObject> = current_section.get_objects();
 
             if self.current_section_tag != previter_section_tag {
                 self.write_position();
@@ -87,28 +87,24 @@ impl Game {
                         }
                     };
                     let target = match cs_objects.get(caps.get(2).unwrap().as_str()) {
-                        Some(tgt) =>tgt,
+                        Some(tgt) => tgt,
                         None => {
                             self.write_line("Invalid target for action.");
                             continue;
                         }
                     };
                     match target {
-                        UnendObject::Info(obj) => {
-                            match obj.interact(interaction) {
-                                InteractionRes::Info(s) => self.write_line(&s),
-                                _ => panic!("InfoObject shouldn't interact this way.")
+                        UnendObject::Info(obj) => match obj.interact(interaction) {
+                            InteractionRes::Info(s) => self.write_line(&s),
+                            _ => panic!("InfoObject shouldn't interact this way."),
+                        },
+                        UnendObject::Portal(obj) => match obj.interact(interaction) {
+                            InteractionRes::Info(s) => self.write_line(&s),
+                            InteractionRes::GotoSection(s) => {
+                                self.current_section_tag = s;
+                                continue;
                             }
-                        }
-                        UnendObject::Portal(obj) => {
-                            match obj.interact(interaction) {
-                                InteractionRes::Info(s) => self.write_line(&s),
-                                InteractionRes::GotoSection(s) => {
-                                    self.current_section_tag = s;
-                                    continue;
-                                }
-                            }
-                        }
+                        },
                     };
                 }
                 "pos" => {

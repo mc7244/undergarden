@@ -1,9 +1,9 @@
 mod unend;
 
 use std::collections::HashMap;
+use unend::interagibles::{InfoObject, Interaction, PortalObject, UnendObject};
+use unend::visitables::{BasicSection, Exit, ExitDir, UnendSection};
 use unend::{ConsoleIO, Game};
-use unend::visitables::{UnendSection, BasicSection, Exit, ExitDir};
-use unend::interagibles::{UnendObject, InfoObject, PortalObject, Interaction};
 
 #[macro_use]
 extern crate maplit;
@@ -51,13 +51,13 @@ fn create_sections() -> HashMap<String, UnendSection> {
             ExitDir::East => Exit::Closed("You can't exit through the window.".to_string()),
         },
         hashmap!{"book".to_string() => UnendObject::Info(InfoObject::new(
-            "book".to_string(),
-            "Pink Book".to_string(),
-            hashmap!{
-                Interaction::Look =>  "It is a strange pink book with a black sheep on the cover.".to_string(),
-                Interaction::Take =>  "I don't need this book.".to_string(),
-            },
-       ))},
+             "book".to_string(),
+             "Pink Book".to_string(),
+             hashmap!{
+                 Interaction::Look =>  "It is a strange pink book with a black sheep on the cover.".to_string(),
+                 Interaction::Take =>  "I don't need this book.".to_string(),
+             },
+        ))},
     ));
 
     let secretroom = UnendSection::Basic(BasicSection::new(
