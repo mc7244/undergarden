@@ -5,7 +5,8 @@ pub enum UnendObject {
     Portal(PortalObject),
 }
 
-/// These all the interactions than can be done with people or objects
+/// A complete set of interactions (these come from Thimbleweed Park, with
+/// just a few variations to keep them 1-word long)
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum Interaction {
     Open,
@@ -33,7 +34,8 @@ lazy_static! {
     };
 }
 
-/// Possible results for an interaction
+/// Possible results for an interaction. Plan for this is to be a complete
+/// set of possible results. For now there are one two basic (but useful) ones.
 pub enum InteractionRes {
     Info(String),
     GotoSection(String),
