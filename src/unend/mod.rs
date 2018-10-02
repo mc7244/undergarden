@@ -7,17 +7,14 @@ use std::collections::HashMap;
 use std::io::{self, Write};
 use std::process;
 use regex::{Regex};
-use std::marker::PhantomData;
 
 /// The game: this governs all
-pub struct Game<I, T>
-    where I: Interagible, T: Visitable<I>
+pub struct Game<T>
+    where T: Visitable
 {
     sections: HashMap<String, T>,
     start_section_tag: String,
     current_section_tag : String,
-    // This is only to have rustc compile - or it will file complaining I is unused
-    unused: PhantomData<I>,
 }
 
 /// A trait which allows the `Game` to peform IO on the console.
@@ -40,15 +37,15 @@ pub trait ConsoleIO {
     }
 }
 
-impl<I, T> Game<I, T>
-    where I: Interagible, T: Visitable<I>
+impl<T> Game<T>
+    where T: Visitable
 {
     pub fn new(i_sections: HashMap<String, T>, i_start_section_tag: String) -> Self {
         Game {
             sections: i_sections,
             start_section_tag: i_start_section_tag,
             current_section_tag: String::new(),
-            unused: PhantomData,
+            //unused: PhantomData,
         }
     }
 
@@ -59,7 +56,7 @@ impl<I, T> Game<I, T>
         let interaction_regex = Regex::new(r"(\w+)\s+(\w+)").unwrap();
         loop {
             let current_section = &self.sections[&self.current_section_tag];
-            let cs_interagibles : &HashMap<String, I> = current_section.get_interagibles();
+            let cs_objects : &HashMap<String, UnendObject> = current_section.get_objects();
 
             if self.current_section_tag != previter_section_tag {
                 self.write_position();
@@ -91,17 +88,30 @@ impl<I, T> Game<I, T>
                             continue;
                         }
                     };
-                    let target = match cs_interagibles.get(caps.get(2).unwrap().as_str()) {
+                    let target = match cs_objects.get(caps.get(2).unwrap().as_str()) {
                         Some(tgt) =>tgt,
                         None => {
                             self.write_line("Invalid target for action.");
                             continue;
                         }
                     };
-                    //self.write_line(&format!("Interacting {:?} - {:?}", interaction, target));
-                    match target.interact(interaction) {
-                        InteractionRes::Info(s) => self.write_line(&s)
-                    }
+                    match target {
+                        UnendObject::Info(obj) => {
+                            match obj.interact(interaction) {
+                                InteractionRes::Info(s) => self.write_line(&s),
+                                _ => panic!("InfoObject shouldn't interact this way.")
+                            }
+                        }
+                        UnendObject::Portal(obj) => {
+                            match obj.interact(interaction) {
+                                InteractionRes::Info(s) => self.write_line(&s),
+                                InteractionRes::GotoSection(s) => {
+                                    self.current_section_tag = s;
+                                    continue;
+                                }
+                            }
+                        }
+                    };
                 }
                 "pos" => {
                     self.write_position();
