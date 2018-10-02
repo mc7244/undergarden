@@ -43,7 +43,7 @@ pub enum InteractionRes {
 pub trait Interagible {
     fn get_tag(&self) -> String;
     fn get_name(&self) -> String;
-    fn interact(&self, Interaction) -> InteractionRes;
+    fn interact(&self, _iact: Interaction) -> InteractionRes;
 }
 
 /// An object which can only give information (=return strings) when
