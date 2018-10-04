@@ -26,7 +26,14 @@ impl ConsoleIO for Game {}
 fn main() {
     let sections = create_sections();
 
-    let mut game = Game::new(sections, "hallway".to_string());
+    let initial_inventory = hashmap!{s!("busticket") => UnendObject::Info(InfoObject::new(
+        s!("busticket"),
+        s!("Used bus ticket"),
+        hashmap!{
+            Interaction::Look => s!("It's the ticket I used to come here. I can't use it anymore, at least not legally."),
+        },
+    ))};
+    let mut game = Game::new(sections, "hallway".to_string(), initial_inventory);
 
     game.run();
 }
@@ -62,9 +69,9 @@ fn create_sections() -> HashMap<String, UnendSection> {
             s!("book"),
             s!("Pink Book"),
             hashmap!{
-                Interaction::Look =>  s!("It is a strange pink book with a black sheep on the cover."),
-                Interaction::Take =>  s!("I don't need this book."),
-                Interaction::Use  =>  s!("Hmmm, I prefer to watch movies rather than read."),
+                Interaction::Look => s!("It is a strange pink book with a black sheep on the cover."),
+                Interaction::Take => s!("I don't need this book."),
+                Interaction::Use  => s!("Hmmm, I prefer to watch movies rather than read."),
             },
         ))},
     ));

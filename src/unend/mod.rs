@@ -13,7 +13,7 @@ pub struct Game {
     sections: HashMap<String, UnendSection>,
     start_section_tag: String,
     current_section_tag: String,
-    inventory: HashMap<String, UnendObject>
+    inventory: HashMap<String, UnendObject>,
 }
 
 /// A trait which allows the `Game` to peform IO on the console.
@@ -37,12 +37,16 @@ pub trait ConsoleIO {
 }
 
 impl Game {
-    pub fn new(i_sections: HashMap<String, UnendSection>, i_start_section_tag: String) -> Self {
+    pub fn new(
+        i_sections: HashMap<String, UnendSection>,
+        i_start_section_tag: String,
+        initial_inventory: HashMap<String, UnendObject>,
+    ) -> Self {
         Game {
             sections: i_sections,
             start_section_tag: i_start_section_tag,
             current_section_tag: String::new(),
-            inventory: HashMap::new(),
+            inventory: initial_inventory,
         }
     }
 
@@ -112,9 +116,19 @@ impl Game {
                 "pos" => {
                     self.write_position();
                 }
-                cmd if (cmd == "q" || cmd == "quit") => {
+                cmd if (cmd == "i") => {
+                    self.write_line("Your inventory:");
+                    self.write_line(&format!("{:?}", self.inventory));
+                }
+                cmd if (cmd == "p") => {
+                    self.write_position();
+                }
+                cmd if (cmd == "q") => {
                     self.write_line("See you!");
                     process::exit(0);
+                }
+                cmd if (cmd == "h") => {
+                    self.write_help();
                 }
                 _ => {
                     self.write_line("Unknown command.");
@@ -129,5 +143,15 @@ impl Game {
         };
         self.write_line(&format!("You are in the {}", current_section.get_name()));
         self.write_line(&current_section.get_dsc());
+    }
+
+    fn write_help(&self) {
+        self.write_line("Available commands:");
+        self.write_line("  n/s/w/e - Go north/south/west/east");
+        self.write_line("  i - Show inventory");
+        self.write_line("  p - Show where I am");
+        // TODO: help for actions
+        self.write_line("  q - Quit");
+        self.write_line("  h - Print this help");
     }
 }

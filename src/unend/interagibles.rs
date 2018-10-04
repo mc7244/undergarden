@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+#[derive(Debug, Clone)]
 pub enum UnendObject {
     Info(InfoObject),
     Portal(PortalObject),
