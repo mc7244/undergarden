@@ -8,11 +8,12 @@ use std::collections::HashMap;
 use std::io::{self, Write};
 use std::process;
 
-/// The game: this governs all
+/// The game: this governs it all
 pub struct Game {
     sections: HashMap<String, UnendSection>,
     start_section_tag: String,
     current_section_tag: String,
+    inventory: HashMap<String, UnendObject>
 }
 
 /// A trait which allows the `Game` to peform IO on the console.
@@ -41,7 +42,7 @@ impl Game {
             sections: i_sections,
             start_section_tag: i_start_section_tag,
             current_section_tag: String::new(),
-            //unused: PhantomData,
+            inventory: HashMap::new(),
         }
     }
 
@@ -49,7 +50,7 @@ impl Game {
         self.current_section_tag = self.start_section_tag.clone();
         let mut previter_section_tag = String::new();
 
-        let interaction_regex = Regex::new(r"(\w+)\s+(\w+)").unwrap();
+        let interaction_regex = Regex::new(r"^(\w+)\s+(\w+)$").unwrap();
         loop {
             let current_section = match &self.sections[&self.current_section_tag] {
                 UnendSection::Basic(cs) => cs,
@@ -96,6 +97,7 @@ impl Game {
                     match target {
                         UnendObject::Info(obj) => match obj.interact(interaction) {
                             InteractionRes::Info(s) => self.write_line(&s),
+                            // We do not handle other results for this object
                             _ => panic!("InfoObject shouldn't interact this way."),
                         },
                         UnendObject::Portal(obj) => match obj.interact(interaction) {

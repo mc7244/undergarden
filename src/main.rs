@@ -11,6 +11,14 @@ extern crate maplit;
 extern crate lazy_static;
 extern crate regex;
 
+// Since we have to create a lot of string in defining the game, we
+// define a handy macro for that.
+macro_rules! s {
+    ($x:expr) => {
+        String::from($x)
+    };
+}
+
 // Our games does I/O from the console, so we implement the relative trait
 // No need to actually implement methods, the default ones will do
 impl ConsoleIO for Game {}
@@ -27,52 +35,53 @@ fn main() {
 /// and return an HashMap containing them
 fn create_sections() -> HashMap<String, UnendSection> {
     let hallway = UnendSection::Basic(BasicSection::new(
-        "hallway".to_string(),
-        "Main hallway".to_string(),
-        "You can go north to the kitchen, south to the sitting room, ...".to_string(),
+        s!("hallway"),
+        s!("Main hallway"),
+        s!("You can go north to the kitchen, south to the sitting room. There's a *fireplace* in the middle."),
         hashmap!{
-            ExitDir::North => Exit::Visitable("kitchen".to_string()),
-            ExitDir::East => Exit::Closed("There's no time for gardening.".to_string()),
+            ExitDir::North => Exit::Visitable(s!("kitchen")),
+            ExitDir::East => Exit::Closed(s!("This is no time for gardening.")),
         },
-        hashmap!{"fireplace".to_string() => UnendObject::Portal(PortalObject::new(
-            "fireplace".to_string(),
-            "A strange fireplace".to_string(),
-            "This fireplace glows like it's enchanted.".to_string(),
-            "secretroom".to_string(),
+        hashmap!{s!("fireplace") => UnendObject::Portal(PortalObject::new(
+            s!("fireplace"),
+            s!("A strange fireplace"),
+            s!("This fireplace glows like it's enchanted."),
+            s!("secretroom"),
         ))},
     ));
 
     let kitchen = UnendSection::Basic(BasicSection::new(
-        "kitchen".to_string(),
-        "The grand kitchen".to_string(),
-        "You are at the center of the kitchen and dining room.".to_string(),
+        s!("kitchen"),
+        s!("The grand kitchen"),
+        s!("You are at the center of the kitchen and dining room. The only exit is south. There's a *book* on the table."),
         hashmap!{
-            ExitDir::South => Exit::Visitable("hallway".to_string()),
-            ExitDir::East => Exit::Closed("You can't exit through the window.".to_string()),
+            ExitDir::South => Exit::Visitable(s!("hallway")),
+            ExitDir::East => Exit::Closed(s!("You can't exit through the window.")),
         },
-        hashmap!{"book".to_string() => UnendObject::Info(InfoObject::new(
-             "book".to_string(),
-             "Pink Book".to_string(),
-             hashmap!{
-                 Interaction::Look =>  "It is a strange pink book with a black sheep on the cover.".to_string(),
-                 Interaction::Take =>  "I don't need this book.".to_string(),
-             },
+        hashmap!{s!("book") => UnendObject::Info(InfoObject::new(
+            s!("book"),
+            s!("Pink Book"),
+            hashmap!{
+                Interaction::Look =>  s!("It is a strange pink book with a black sheep on the cover."),
+                Interaction::Take =>  s!("I don't need this book."),
+                Interaction::Use  =>  s!("Hmmm, I prefer to watch movies rather than read."),
+            },
         ))},
     ));
 
     let secretroom = UnendSection::Basic(BasicSection::new(
-        "secretroom".to_string(),
-        "Secret Room".to_string(),
-        "A very strange and dark secret room. You see a light east, maybe an exit".to_string(),
+        s!("secretroom"),
+        s!("Secret Room"),
+        s!("A very strange and dark secret room. You see a light east, maybe an exit"),
         hashmap!{
-            ExitDir::South => Exit::Visitable("hallway".to_string()),
+            ExitDir::East => Exit::Visitable(s!("hallway")),
         },
         hashmap!{},
     ));
 
     hashmap!{
-        "hallway".to_string() => hallway,
-        "kitchen".to_string() => kitchen,
-        "secretroom".to_string() => secretroom,
+        s!("hallway") => hallway,
+        s!("kitchen") => kitchen,
+        s!("secretroom") => secretroom,
     }
 }

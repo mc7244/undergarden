@@ -89,7 +89,6 @@ impl Interagible for InfoObject {
         self.name.clone()
     }
     fn interact(&self, iact: Interaction) -> InteractionRes {
-        // See if we have a string available for this interaction
         match self.av_interactions.get(&iact) {
             Some(s) => InteractionRes::Info(s.to_string()),
             None => InteractionRes::Info("That won't work".to_string()),
@@ -116,7 +115,6 @@ impl Interagible for PortalObject {
         self.name.clone()
     }
     fn interact(&self, iact: Interaction) -> InteractionRes {
-        // See if we have a string available for this interaction
         match iact {
             Interaction::Look => InteractionRes::Info(self.dsc.clone()),
             Interaction::Use => InteractionRes::GotoSection(self.destination.clone()),
