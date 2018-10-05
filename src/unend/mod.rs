@@ -91,7 +91,8 @@ impl Game {
                             continue;
                         }
                     };
-                    let target = match cs_objects.get(caps.get(2).unwrap().as_str()) {
+                    let target_tag = caps.get(2).unwrap().as_str();
+                    let target = match cs_objects.get(target_tag) {
                         Some(tgt) => tgt,
                         None => {
                             self.write_line("Invalid target for action.");
@@ -101,7 +102,6 @@ impl Game {
                     match target {
                         UnendObject::Info(obj) => match obj.interact(interaction) {
                             InteractionRes::Info(s) => self.write_line(&s),
-                            // We do not handle other results for this object
                             _ => panic!("InfoObject shouldn't interact this way."),
                         },
                         UnendObject::Portal(obj) => match obj.interact(interaction) {
@@ -110,6 +110,25 @@ impl Game {
                                 self.current_section_tag = s;
                                 continue;
                             }
+                            _ => panic!("PortalObject shouldn't interact this way."),
+                        },
+                        UnendObject::Rolling(obj) => match obj.interact(interaction) {
+                            InteractionRes::Info(s) => self.write_line(&s),
+                            InteractionRes::Take(s) => {
+                                if obj.is_takeable() {
+                                    self.write_line("Taking!");
+                                    // self.inventory.insert(
+                                    //     target_tag.to_string(),
+                                    //     current_section.objects.remove(target_tag).unwrap(),
+                                    // );
+                                    self.write_line(&s);
+                                } else {
+                                    // Object is not takeble, write why
+                                    self.write_line(&s);
+                                }
+                            }
+                            // We do not handle other results for this object
+                            _ => panic!("InfoObject shouldn't interact this way."),
                         },
                     };
                 }

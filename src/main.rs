@@ -1,7 +1,7 @@
 mod unend;
 
 use std::collections::HashMap;
-use unend::interagibles::{InfoObject, Interaction, PortalObject, UnendObject};
+use unend::interagibles::{InfoObject, Interaction, PortalObject, RollingObject, UnendObject};
 use unend::visitables::{BasicSection, Exit, ExitDir, UnendSection};
 use unend::{ConsoleIO, Game};
 
@@ -26,9 +26,10 @@ impl ConsoleIO for Game {}
 fn main() {
     let sections = create_sections();
 
-    let initial_inventory = hashmap!{s!("busticket") => UnendObject::Info(InfoObject::new(
+    let initial_inventory = hashmap!{s!("busticket") => UnendObject::Rolling(RollingObject::new(
         s!("busticket"),
         s!("Used bus ticket"),
+        true,
         hashmap!{
             Interaction::Look => s!("It's the ticket I used to come here. I can't use it anymore, at least not legally."),
         },
@@ -44,17 +45,28 @@ fn create_sections() -> HashMap<String, UnendSection> {
     let hallway = UnendSection::Basic(BasicSection::new(
         s!("hallway"),
         s!("Main hallway"),
-        s!("You can go north to the kitchen, south to the sitting room. There's a *fireplace* in the middle."),
+        s!("You can go north to the kitchen, south to the sitting room. There's a *fireplace* in the middle. There is *bigkey* just over the fireplace."),
         hashmap!{
             ExitDir::North => Exit::Visitable(s!("kitchen")),
             ExitDir::East => Exit::Closed(s!("This is no time for gardening.")),
         },
-        hashmap!{s!("fireplace") => UnendObject::Portal(PortalObject::new(
-            s!("fireplace"),
-            s!("A strange fireplace"),
-            s!("This fireplace glows like it's enchanted."),
-            s!("secretroom"),
-        ))},
+        hashmap!{
+            s!("fireplace") => UnendObject::Portal(PortalObject::new(
+                s!("fireplace"),
+                s!("A strange fireplace"),
+                s!("This fireplace glows like it's enchanted."),
+                s!("secretroom"),
+            )),
+            s!("bigkey") => UnendObject::Rolling(RollingObject::new(
+                s!("bigkey"),
+                s!("Big Key"),
+                true,
+                hashmap!{
+                    Interaction::Look => s!("A very big golden key."),
+                    Interaction::Take => s!("Good idea, I might need it."),
+                },
+            )),
+        },
     ));
 
     let kitchen = UnendSection::Basic(BasicSection::new(
@@ -70,7 +82,6 @@ fn create_sections() -> HashMap<String, UnendSection> {
             s!("Pink Book"),
             hashmap!{
                 Interaction::Look => s!("It is a strange pink book with a black sheep on the cover."),
-                Interaction::Take => s!("I don't need this book."),
                 Interaction::Use  => s!("Hmmm, I prefer to watch movies rather than read."),
             },
         ))},

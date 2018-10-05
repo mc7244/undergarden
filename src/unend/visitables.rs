@@ -48,7 +48,7 @@ pub struct BasicSection {
     name: String,
     dsc: String,
     exits: HashMap<ExitDir, Exit>,
-    objects: HashMap<String, UnendObject>,
+    pub objects: HashMap<String, UnendObject>,
 }
 
 impl BasicSection {
